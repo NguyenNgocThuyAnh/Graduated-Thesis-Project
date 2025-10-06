@@ -1,10 +1,10 @@
-Implemented Libraries:
-* os
-* cv2
-* numpy
-* matplotlib
-* tensorflow
-* pickle
-* seaborn
-* keras
-* sklearn
+* Implemented Libraries:
+os
+cv2
+numpy
+matplotlib
+tensorflow
+pickle
+seaborn
+keras
+sklearn
