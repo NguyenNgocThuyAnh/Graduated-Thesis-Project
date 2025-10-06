@@ -30,7 +30,7 @@ The project presents these main insights:
 
 ## **3. Research Methodology**
 
-  ### Dataset
+  **Dataset**
   * Source: [Blood Cell Images for Cancer Detection](https://www.kaggle.com/datasets/sumithsingh/blood-cell-images-for-cancer-detection)
   
   * Size: 5,000 high-resolution microscopic images
@@ -47,7 +47,7 @@ The project presents these main insights:
   
   * DOI Citation: https://doi.org/10.34740/kaggle/dsv/10500753
 
-  ### Workflow
+  **Workflow**
 
   * Data Preprocessing:
   
@@ -63,7 +63,7 @@ The project presents these main insights:
 
   * Comparison: Analyzed models' performance (accuracy, F1-score, AUC, and computational cost) and proposed enhancing strategies.
 
-  ### Experimental Environment
+  **Experimental Environment**
 
   * Language: Python
 
@@ -77,7 +77,7 @@ The project presents these main insights:
 
 ## 4. Instructions for Implementation
 
-  ### Step 1: Setup Google Colab Environment
+  **Step 1: Setup Google Colab Environment**
   * Open a new Google Colab notebook.
     
   * In the top menu, go to Runtime → Change runtime type → Hardware accelerator → Choose T4 GPU option.
@@ -90,7 +90,7 @@ The project presents these main insights:
     from google.colab import drive
     drive.mount('/content/drive', force_remount=True)
     ```
-  ### Step 2: Install Necessary Libraries
+  **Step 2: Install Necessary Libraries**
   * Run ```import ...``` or ```from ... import ...``` to import needed libraries.
 
   * For example:
@@ -111,7 +111,7 @@ The project presents these main insights:
     from sklearn.model_selection import train_test_split
     from sklearn.preprocessing import label_binarize
     ```
-  ### Step 3: Run the Model Notebook
+  **Step 3: Run the Model Notebook**
   * Open the notebook of the model you want to run (e.g. DenseNet201.ipynb).
 
   * Execute all cells sequentially.
@@ -124,7 +124,31 @@ The project presents these main insights:
     
     * Model Training – fine-tune pre-trained CNN models using transfer learning on GPU.
 
+    * For example:
     ``` python
+    # vgg model
+    vgg = VGG16(weights = 'imagenet',include_top = False,input_shape = (IMG_SIZE, IMG_SIZE, 3),classes=len(CATEGORIES))
+    
+    # freezing the bottom (conv) layers
+    for layer in vgg.layers:
+      layer.trainable = False
+    
+    model = keras.Sequential([vgg,keras.layers.GlobalAveragePooling2D(),
+                          keras.layers.Dense(512, activation='relu'),
+                          keras.layers.Dense(128, activation='relu'),
+                          keras.layers.Dropout(0.25),
+                          keras.layers.Dense(len(CATEGORIES), activation='softmax'),])
+
+    # Compilation
+    model.compile(optimizer = 'adam',
+                  loss = 'sparse_categorical_crossentropy', # For multi-class classification
+                  metrics = ['accuracy'])
+    
+    # Áp dụng EarlyStopping
+    early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+    model.summary()
+    
     history = model.fit(train_ds, validation_data=val_ds, epochs=20, callbacks=[early_stopping])
     ```
     
@@ -132,7 +156,7 @@ The project presents these main insights:
     
     * Explainability – visualize Grad-CAM heatmaps for AI interpretability.
    
-  ### Step 4: Save and Load Trained Models
+  **Step 4: Save and Load Trained Models**
   * After training, model weights and training histories are automatically saved with the following structure:
   ``` python
   Saved Models/
@@ -155,7 +179,7 @@ The project presents these main insights:
   # Load the saved model
   model = tf.keras.models.load_model('/content/drive/MyDrive/Tổng hợp Đồ án Tốt nghiệp/Saved Models/vgg16.keras')
   ```
-  ### Step 5: Visualize Results
+  **Step 5: Visualize Results**
   * Run the visualization section at the end of each notebook to display:
 
     * Training accuracy and loss curves
@@ -166,3 +190,30 @@ The project presents these main insights:
    
   * All outputs appear directly inside Colab for inspection.
 
+  **Notes:**
+  * All experiments were conducted on Google Colab (Pro) using NVIDIA Tesla T4 GPU.
+  
+  * Average training time: 10 – 25 minutes per model.
+  
+  * DenseNet201 and EfficientNetB3 achieved the best balance between performance and efficiency.
+
+### 5. Results & Outputs
+  * Trained models, evaluation logs, and visualizations are displayed directly in each source code files.
+
+  * Key metrics reported in this project:
+
+    * Accuracy – overall classification performance
+      
+    * F1-score – harmonic mean of precision and recall
+            
+    * ROC–AUC – discriminative ability across all classes
+      
+    * Grad-CAM Visualizations – explainability maps highlighting decision regions
+
+  * Some key insights:
+    * DenseNet201 and EfficientNetB3 achieved the highest overall accuracy (≈ 0.99) and all models achieve AUC = 1.00.
+    * VGG16 provided faster convergence on limited data, suitable for lightweight environments.
+    * Grad-CAM heatmaps confirmed model interpretability by clearly identifying regions corresponding to specific blood cell features.
+### 6. Author
+  * **Nguyen Ngoc Thuy Anh** - Data Science Major - Class DS001 - Course 48 - UEH College of Technology and Design – University of Economics Ho Chi Minh City (UEH)
+  * Contact: anhnguyen.31221020005@st.ueh.edu.vn (EduMail) | nnta10012004@gmail.com (Personal) | Github: [NguyenNgocThuyAnh](https://github.com/NguyenNgocThuyAnh)
